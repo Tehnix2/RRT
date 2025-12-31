@@ -1,5 +1,5 @@
 # RRT
-Automatic Raid Lockout Resetter
+Automatic Raid Lockout Resetter on specified days
 
 
 Since raid lockouts are not resetting by default every wednesday and I've gotten annoyed by raid members constantly having to leave raid, reset their own lockouts (and clicking on All Raids instead of the specific raids), I've built an addon that automates this process.

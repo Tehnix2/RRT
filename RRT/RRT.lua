@@ -1,8 +1,8 @@
--- RRT v0.02
+-- RRT v0.03
 -- Auto-resets raid lockouts based on user preferences
 
 RRT = {}
-RRT.Version = "0.02"
+RRT.Version = "0.03"
 
 -------------------------------------------------------------------
 -- Saved Variables and Defaults
@@ -12,13 +12,13 @@ RRT.Version = "0.02"
 RRT_Settings = RRT_Settings or {
     Enabled = true,
     AutoResetDays = {
-        [1] = false, -- Sunday
-        [2] = false, -- Monday
-        [3] = false, -- Tuesday
-        [4] = true,  -- Wednesday (default)
-        [5] = false, -- Thursday
-        [6] = false, -- Friday
-        [7] = false, -- Saturday
+        [1] = false, -- Monday
+        [2] = false, -- Tuesday
+        [3] = true,  -- Wednesday (default)
+        [4] = false, -- Thursday
+        [5] = false, -- Friday
+        [6] = false, -- Saturday
+        [7] = false, -- Sunday
     },
     ResetOnLeaveGroup = false,
     ShowResetMessage = true,
@@ -31,28 +31,48 @@ RRT_CharacterData = RRT_CharacterData or {
 
 -- Day names for display
 local DayNames = {
-    [1] = "Sunday",
-    [2] = "Monday",
-    [3] = "Tuesday",
-    [4] = "Wednesday",
-    [5] = "Thursday",
-    [6] = "Friday",
-    [7] = "Saturday",
+    [1] = "Monday",
+    [2] = "Tuesday",
+    [3] = "Wednesday",
+    [4] = "Thursday",
+    [5] = "Friday",
+    [6] = "Saturday",
+    [7] = "Sunday",
 }
 
 -------------------------------------------------------------------
 -- Helper Functions
 -------------------------------------------------------------------
 
+
 local function GetCurrentDayOfWeek()
-    -- Returns 1-7 (Sunday-Saturday)
-    local weekday = tonumber(date("%w", time()))
-    return weekday == 0 and 7 or weekday -- Convert 0 (Sunday) to 7
+    local weekday = tonumber(date("%w"))
+    if not weekday then
+        -- Fallback: use calendar API
+        local weekday_calendar = CalendarGetWeekday()
+        return weekday_calendar
+    end
+    return weekday == 0 and 7 or weekday
 end
 
 local function GetDayOfYear()
-    return tonumber(date("%j", time()))
+    local day = tonumber(date("%j"))
+    if not day then
+        -- Fallback calculation
+        local month, day_of_month, year = CalendarGetDate()
+        local days_in_months = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}
+        if year % 4 == 0 and (year % 100 ~= 0 or year % 400 == 0) then
+            days_in_months[2] = 29
+        end
+        local day_count = day_of_month
+        for i = 1, month - 1 do
+            day_count = day_count + days_in_months[i]
+        end
+        return day_count
+    end
+    return day
 end
+
 
 local function ShouldResetToday()
     local currentDay = GetCurrentDayOfWeek()

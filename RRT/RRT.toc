@@ -1,6 +1,6 @@
-## Title: RRT v0.02
+## Title: RRT v0.03
 ## Name: RRT
-## Version: 0.02
+## Version: 0.03
 ## Notes: Automatically resets raid lockouts on specified days
 ## Author: Tehnix
 ## Interface: 30300
